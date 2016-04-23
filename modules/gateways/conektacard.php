@@ -118,6 +118,7 @@ function conektacard_capture($params) {
 									      'email'			=> $email,
 									      'phone'			=> $phone,
 									      'name'			=> $firstname.' '.$lastname,
+										  'phone' 			=> $phone,
 									      'line_items'		=> array(
 															        array( 
 															          'name'		=>	$data_description,
