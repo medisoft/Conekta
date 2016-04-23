@@ -30,7 +30,7 @@
     <td align="center">Imprime este comprobante, Usted podrán pagar por medio de transferencia electrónica o directamente en sucursales bancarias con efectivo o cheque</td>
     </tr>
   <tr>
-    <td align="center"><img src="assets/img/SPEI.jpg" /></td>
+    <td align="center"><img src="assets/img/spei.jpg" /></td>
   </tr>
   <tr>
     <td align="center">Banco: <?php echo $bank ?></td>

@@ -16,7 +16,7 @@
 // USE OR PERFORMANCE OF THIS SOFTWARE.
 
 # Required File Includes
-include("../../../dbconnect.php");
+include("../../../init.php");
 include("../../../includes/functions.php");
 include("../../../includes/gatewayfunctions.php");
 include("../../../includes/invoicefunctions.php");
@@ -42,9 +42,9 @@ $amount 			= $json->amount;
 $status				= $json->status;
 $transid 			= $json->id;
 
-
+logModuleCall('conektaoxxo','callback',$result,'ResponseData','ProcessedData',array());
 // Validamos que el IPN sea de Banorte
-if($json->payment_method->object=='cash')
+if($json->payment_method->object=='cash_payment')
 
 {
 	// Guardar Log de webhook (comentar esto para no guardar logs)
