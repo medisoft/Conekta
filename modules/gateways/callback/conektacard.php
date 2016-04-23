@@ -16,7 +16,7 @@
 // USE OR PERFORMANCE OF THIS SOFTWARE.
 
 # Required File Includes
-include("../../../dbconnect.php");
+include("../../../init.php");
 include("../../../includes/functions.php");
 include("../../../includes/gatewayfunctions.php");
 include("../../../includes/invoicefunctions.php");
@@ -32,6 +32,10 @@ $invoiceid = $_POST["x_invoice_num"];
 $transid = $_POST["x_trans_id"];
 $amount = $_POST["x_amount"];
 $fee = $_POST["x_fee"];
+
+$result 			= @file_get_contents('php://input');
+
+logModuleCall('conektacard','callback',$result,'ResponseData','ProcessedData',array());
 
 $invoiceid = checkCbInvoiceID($invoiceid,$GATEWAY["name"]); # Checks invoice ID is a valid invoice number or ends processing
 

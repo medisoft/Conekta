@@ -16,7 +16,7 @@
 // USE OR PERFORMANCE OF THIS SOFTWARE.
 
 # Required File Includes
-include("../../../dbconnect.php");
+include("../../../init.php");
 include("../../../includes/functions.php");
 include("../../../includes/gatewayfunctions.php");
 include("../../../includes/invoicefunctions.php");
@@ -42,7 +42,7 @@ $amount 			= $json->amount;
 $status				= $json->status;
 $transid 			= $json->id;
 
-
+logModuleCall('conektaspei','callback',$result,'ResponseData','ProcessedData',array());
 // Validamos que el IPN sea de Banorte
 if($json->payment_method->object=='bank_transfer_payment')
 
