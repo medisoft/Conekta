@@ -15,6 +15,8 @@
 // OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE 
 // USE OR PERFORMANCE OF THIS SOFTWARE.
 
+@mkdir("conekta_logs",0777);
+
 # Required File Includes
 include("../../../init.php");
 include("../../../includes/functions.php");
@@ -24,62 +26,62 @@ include("../../../includes/invoicefunctions.php");
 $gatewaymodule = "conektaspei"; # Enter your gateway module name here replacing template
 
 $GATEWAY = getGatewayVariables($gatewaymodule);
-if (!$GATEWAY["type"])
-{
-	die("Module Not Activated");
+if (!$GATEWAY["type"]) {
+    die("Module Not Activated");
 } # Checks gateway module is active before accepting callback
 
 // Webhook
 
-$result 			= @file_get_contents('php://input');
+$result = @file_get_contents('php://input');
 
-$json 				= json_decode($result);
-$json 				= $json->data->object;
+$json = json_decode($result);
+$json = $json->data->object;
 
-$invoiceid 			= $json->reference_id;
-$fee 				= $json->fee;
-$amount 			= $json->amount;
-$status				= $json->status;
-$transid 			= $json->id;
+$invoiceid = $json->reference_id;
+$fee = $json->fee;
+$amount = $json->amount;
+$status = $json->status;
+$transid = $json->id;
 
-logModuleCall('conektaspei','callback',$result,'ResponseData','ProcessedData',array());
+logModuleCall('conektaspei', 'callback', $result, 'ResponseData', 'ProcessedData', array());
 // Validamos que el IPN sea de Banorte
-if($json->payment_method->object=='bank_transfer_payment')
+if ($json->payment_method->object == 'bank_transfer_payment') {
+    // Guardar Log de webhook (comentar esto para no guardar logs)
+    $fp = fopen('conekta_logs/spei_' . md5(uniqid()) . ".txt", "wb");
+    fwrite($fp, $result);
+    fclose($fp);
 
-{
-	// Guardar Log de webhook (comentar esto para no guardar logs)
-	$fp = fopen('conekta_logs/spei_'.md5(uniqid()).".txt","wb");
-	fwrite($fp,$result);
-	fclose($fp);
-	
-	// Convertimos montos con decimales
-	$amount_2 			= substr($amount, 0, -2);
-	$decimals_2 		= substr($amount, strlen($amount_2), strlen($amount));
-	$amount				= $amount_2.'.'.$decimals_2;
-	
-	$amount_3 			= substr($fee, 0, -2);
-	$decimals_3 		= substr($fee, strlen($amount_3), strlen($fee));
-	$fee				= $amount_3.'.'.$decimals_3;
-	
-	$invoiceid 			= str_replace('factura_', '', $invoiceid);
-	
-	if($status=='paid'){$status=1;}else{$status=0;}
-	
-	$invoiceid = checkCbInvoiceID($invoiceid,$GATEWAY["name"]); # Checks invoice ID is a valid invoice number or ends processing
-	
-	checkCbTransID($transid); # Checks transaction number isn't already in the database and ends processing if it does
-	
-	if ($status=="1") {
-	    # Successful
-	    addInvoicePayment($invoiceid,$transid,$amount,$fee,$gatewaymodule); # Apply Payment to Invoice: invoiceid, transactionid, amount paid, fees, modulename
-		logTransaction($GATEWAY["name"],$result,"Successful"); # Save to Gateway Log: name, data array, status
-	} else {
-		# Unsuccessful
-	    logTransaction($GATEWAY["name"],$result,"Unsuccessful"); # Save to Gateway Log: name, data array, status
-	}
-}else
-{
-echo $json->payment_method->type;
+    // Convertimos montos con decimales
+    $amount_2 = substr($amount, 0, -2);
+    $decimals_2 = substr($amount, strlen($amount_2), strlen($amount));
+    $amount = $amount_2 . '.' . $decimals_2;
+
+    $amount_3 = substr($fee, 0, -2);
+    $decimals_3 = substr($fee, strlen($amount_3), strlen($fee));
+    $fee = $amount_3 . '.' . $decimals_3;
+
+    $invoiceid = str_replace('factura_', '', $invoiceid);
+
+    if ($status == 'paid') {
+        $status = 1;
+    } else {
+        $status = 0;
+    }
+
+    $invoiceid = checkCbInvoiceID($invoiceid, $GATEWAY["name"]); # Checks invoice ID is a valid invoice number or ends processing
+
+    checkCbTransID($transid); # Checks transaction number isn't already in the database and ends processing if it does
+
+    if ($status == "1") {
+        # Successful
+        addInvoicePayment($invoiceid, $transid, $amount, $fee, $gatewaymodule); # Apply Payment to Invoice: invoiceid, transactionid, amount paid, fees, modulename
+        logTransaction($GATEWAY["name"], $result, "Successful"); # Save to Gateway Log: name, data array, status
+    } else {
+        # Unsuccessful
+        logTransaction($GATEWAY["name"], $result, "Unsuccessful"); # Save to Gateway Log: name, data array, status
+    }
+} else {
+    echo $json->payment_method->type;
 }
 
 
