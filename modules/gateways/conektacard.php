@@ -145,14 +145,14 @@ function conektacard_capture($params)
     } catch (Exception $e) {
         # Transaccion Declinada
         $results['status'] = 'declined';
-        $results['transid'] = $data->payment_method->auth_code;
+        $results['transid'] = 'error'; //$data->payment_method->auth_code;
         $results['data'] = $e->getMessage();
     }
 
     # Validamos los resultados
     if ($results['status'] == 'success') {
         return array('status' => 'success', 'transid' => $results['transid'], 'rawdata' => 'OK');
-    } elseif ($gatewayresult == 'declined') {
+    } elseif ($results['status'] == 'declined') {
         return array('status' => 'declined', 'rawdata' => $results);
     } else {
         return array('status' => 'error', 'rawdata' => $results);
