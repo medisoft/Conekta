@@ -18,26 +18,11 @@
 function conektaoxxo_config()
 {
     $configarray = array(
-        'FriendlyName' => array(
-            'Type' => 'System',
-            'Value' => 'Conekta Oxxo'
-        ),
-        'private_key' => array(
-            'FriendlyName' => 'Llave Privada',
-            'Type' => 'text',
-            'Size' => '50'
-        ),
-        'days_expire' => array(
-            'FriendlyName' => 'Dias para Expirar',
-            'Type' => 'text',
-            'Size' => '2',
-        ),
-        'instructions' => array(
-            'FriendlyName' => 'Instrucciones de pago',
-            'Type' => 'textarea',
-            'Rows' => '5',
-            'Description' => ''
-        )
+        'FriendlyName' => array('Type' => 'System','Value' => 'Conekta Oxxo' ),
+        'private_key' => array( 'FriendlyName' => 'Llave Privada', 'Type' => 'text', 'Size' => '50' ),
+        "testmode" => array("FriendlyName" => "Test Mode", "Type" => "yesno", "Description" => "Tick this to make all transactions use your test keys above.",),
+        'days_expire' => array( 'FriendlyName' => 'Dias para Expirar', 'Type' => 'text', 'Size' => '2', ),
+        'instructions' => array( 'FriendlyName' => 'Instrucciones de pago', 'Type' => 'textarea', 'Rows' => '5', 'Description' => '' )
     );
     return $configarray;
 }
