@@ -88,7 +88,13 @@ function conekta_refund($params)
 }
 
 // Codigo para realizar cargos automaticos al cliente. La tarjeta deberia ser guardada tokenizada
-function conekta_capture($params)
+/*
+ * Hay que crear un customer, luego crear un token de tarjeta, y asignarlo al customer, y luego usar esta url
+ * http://docs.whmcs.com/Dev:Gateway:Merchant:Tokenised_Gateways
+ * para guardar ese token de customer (no el de tarjeta) y que se pueda hacer capture.
+ * Probar esto primero en openpay, ya que tiene mas metodos y es mas barato que conekta
+ */
+/*function conekta_capture($params)
 {
     require_once('conekta/vendor/conekta/conekta-php/lib/Conekta.php');
 
@@ -200,6 +206,6 @@ function conekta_capture($params)
     } else {
         return array('status' => 'error', 'rawdata' => $results);
     }
-}
+}*/
 
 ?>
