@@ -3,7 +3,7 @@
 define("CLIENTAREA", true);
 define("FORCESSL", true);
 
-error_reporting(255);
+//error_reporting(255);
 require_once("init.php");
 require_once("includes/functions.php");
 require_once("includes/clientareafunctions.php");
@@ -175,7 +175,7 @@ if ($_SESSION['uid']) {
 
             } // end of if to check if this is a token acceptance for otps
 
-        } else { // end if to check if this is a one time payment. else = this IS a otp
+        } else if(false) { // end if to check if this is a one time payment. else = this IS a otp
 
             $amount_total = $_POST['total_amount'];
             $amount_subscribe = $_POST['amount'];
