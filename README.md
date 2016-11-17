@@ -1,3 +1,12 @@
+*Actualizacion 17 de Noviembre del 2016*
+
+- Soporte para tarjetas de credito y debito usando tokenizacion (Mario Medina mario@opticalcube.com)
+- Reparacion de varios bugs
+- Carga de la ultima libreria de conekta desde composer
+
+Trabajo basado en https://github.com/Carlos110988/Conekta
+
+
 Conekta 2.1.3 WHMCS
 
 6 Sep - Se agregar parametro "Phone" en details al enviar el cargo a Conekta. (Gracias a Marco Polo por la información)

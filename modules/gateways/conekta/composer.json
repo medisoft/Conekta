@@ -1,0 +1,5 @@
+{
+    "require": {
+        "conekta/conekta-php": "dev-master"
+    }
+}

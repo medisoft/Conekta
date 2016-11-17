@@ -63,12 +63,17 @@ function conektatoken_config()
     return $configarray;
 }
 
+function conektatoken_capture($params)
+{
+    require_once('conekta/vendor/conekta/conekta-php/lib/Conekta.php');
+}
+
 function conektatoken_link($params)
 {
 
     # Variables de Conekta
     $private_key = $params['testmode'] ? $params['private_test_key'] : $params['private_key'];
-    $public_key = $params['testmode'] ?  $params['public_test_key'] : $params['public_key'];
+    $public_key = $params['testmode'] ? $params['public_test_key'] : $params['public_key'];
 
 
     # Variables de la Factura
@@ -109,178 +114,180 @@ function conektatoken_link($params)
     $data_currency = strtolower($currency);
     $data_description = 'Pago Factura No. ' . $invoiceid;
 
-/*
-    # Incluimos la libreria de Conecta 2.0
+    /*
+        # Incluimos la libreria de Conecta 2.0
 
-    require_once('conekta/lib_2.0/Conekta.php');
+        require_once('conekta/lib_2.0/Conekta.php');
 
-    # Creamos el Objeto de Cargo
-    Conekta::setApiKey($private_key);
+        # Creamos el Objeto de Cargo
+        Conekta::setApiKey($private_key);
 
-    # Arraglo con informacion de tarjeta
-    $conekta = array(
-        'description' => $data_description,
-        'reference_id' => 'factura_' . $invoiceid,
-        'amount' => intval($data_amount),
-        'currency' => $data_currency,
-        'cash' => array(
-            'type' => 'token',
-            'expires_at' => $expires
-        ),
-        'details' => array(
-            'email' => $email,
-            'phone' => $phone,
-            'name' => $firstname . ' ' . $lastname,
-            'line_items' => array(
-                array(
-                    'name' => $data_description,
-                    'sku' => $invoiceid,
-                    'unit_price' => intval($data_amount),
-                    'description' => $data_description,
-                    'quantity' => 1,
-                    'type' => 'service-purchase'
+        # Arraglo con informacion de tarjeta
+        $conekta = array(
+            'description' => $data_description,
+            'reference_id' => 'factura_' . $invoiceid,
+            'amount' => intval($data_amount),
+            'currency' => $data_currency,
+            'cash' => array(
+                'type' => 'token',
+                'expires_at' => $expires
+            ),
+            'details' => array(
+                'email' => $email,
+                'phone' => $phone,
+                'name' => $firstname . ' ' . $lastname,
+                'line_items' => array(
+                    array(
+                        'name' => $data_description,
+                        'sku' => $invoiceid,
+                        'unit_price' => intval($data_amount),
+                        'description' => $data_description,
+                        'quantity' => 1,
+                        'type' => 'service-purchase'
+                    )
                 )
+
             )
+        );
+        try {
 
-        )
-    );
-    try {
+            $charge = Conekta_Charge::create($conekta);
 
-        $charge = Conekta_Charge::create($conekta);
+            # Transaccion Correcta
+            $data = json_decode($charge);
 
-        # Transaccion Correcta
-        $data = json_decode($charge);
+            $expiry_date = $data->payment_method->expires_at;
+            $barcode = $data->payment_method->barcode;
+            $barcode_url = $data->payment_method->barcode_url;
 
-        $expiry_date = $data->payment_method->expires_at;
-        $barcode = $data->payment_method->barcode;
-        $barcode_url = $data->payment_method->barcode_url;
+            $ticket = 1;
 
-        $ticket = 1;
+        } catch (Exception $e) {
+            $code = "Error al intentar generar TOKEN";
+            $ticket = 0;
+        }
 
-    } catch (Exception $e) {
-        $code = "Error al intentar generar TOKEN";
-        $ticket = 0;
-    }
+        if ($ticket == 1) {
+            $code = '<form action="conekta_token.php" method="post" target="_blank">';
+            $code .= '<input type="hidden" name="barras" value="' . $barcode_url . '" />';
+            $code .= '<input type="hidden" name="numero" value="' . $barcode . '" />';
+            $code .= '<input type="hidden" name="expira" value="' . $expiry_date . '" />';
+            $code .= '<input type="hidden" name="monto" value="' . $amount . '" />';
+            $code .= '<input type="hidden" name="concepto" value="' . $data_description . '" />';
+            $code .= '<input type="submit" value="Pagar ahora" />';
+            $code .= '</form>';
+        }
+    */
 
-    if ($ticket == 1) {
-        $code = '<form action="conekta_token.php" method="post" target="_blank">';
+    /*    $code = '<form action="conekta_token.php" method="post" target="_blank">';
         $code .= '<input type="hidden" name="barras" value="' . $barcode_url . '" />';
         $code .= '<input type="hidden" name="numero" value="' . $barcode . '" />';
         $code .= '<input type="hidden" name="expira" value="' . $expiry_date . '" />';
         $code .= '<input type="hidden" name="monto" value="' . $amount . '" />';
         $code .= '<input type="hidden" name="concepto" value="' . $data_description . '" />';
         $code .= '<input type="submit" value="Pagar ahora" />';
-        $code .= '</form>';
-    }
-*/
-
-/*    $code = '<form action="conekta_token.php" method="post" target="_blank">';
-    $code .= '<input type="hidden" name="barras" value="' . $barcode_url . '" />';
-    $code .= '<input type="hidden" name="numero" value="' . $barcode . '" />';
-    $code .= '<input type="hidden" name="expira" value="' . $expiry_date . '" />';
-    $code .= '<input type="hidden" name="monto" value="' . $amount . '" />';
-    $code .= '<input type="hidden" name="concepto" value="' . $data_description . '" />';
-    $code .= '<input type="submit" value="Pagar ahora" />';
-    $code .= '</form>';*/
+        $code .= '</form>';*/
 
     $code = "<link rel='stylesheet' href='assets/minified.css' />\n";
-    $code .="<script type=\"text/javascript\" src='assets/js/00-jquery.min.js'></script>\n";
-    $code .="<script type=\"text/javascript\" src='assets/js/01-bootstrap.min.js'></script>\n";
-    $code .="<div class='modal fade' id='captureCard' tabindex='-1' role='dialog'><div class='modal-dialog' role='document'><div class='modal-content'><div class='modal-header'><button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button><h4 class='modal-title'>Enter Card Data</h4></div><div class='modal-body'>";
-    $code .="<div class='container-fluid'>";
+    $code .= "<script type=\"text/javascript\" src='assets/js/00-jquery.min.js'></script>\n";
+    $code .= "<script type=\"text/javascript\" src='assets/js/01-bootstrap.min.js'></script>\n";
+    $code .= "<div class='modal fade' id='captureCard' tabindex='-1' role='dialog'><div class='modal-dialog' role='document'><div class='modal-content'><div class='modal-header'><button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button><h4 class='modal-title'>Enter Card Data</h4></div><div class='modal-body'>";
+    $code .= "<div class='container-fluid'>";
     $code .= "<form action=\"\" method=\"POST\" id=\"card-form\">\n";
-    $code .="  <span class=\"card-errors\"></span>\n";
-    $code .="  <div class=\"row\"><div class='form-group'>\n";
-    $code .="      <label>Nombre del tarjetahabiente</label>\n";
-    $code .="      <input type=\"text\" size=\"20\" data-conekta=\"card[name]\" value=\"{$firstname} {$lastname}\"/>\n";
-    $code .="  </div></div>\n";
-    $code .="  <div class=\"row\">\n";
-    $code .="    <label>\n";
-    $code .="      <span>Número de tarjeta de crédito</span>\n";
-    $code .="      <input type=\"text\" size=\"20\" data-conekta=\"card[number]\"/>\n";
-    $code .="    </label>\n";
-    $code .="  </div>\n";
-    $code .="  <div class=\"row\">\n";
-    $code .="    <label>\n";
-    $code .="      <span>CVC</span>\n";
-    $code .="      <input type=\"text\" size=\"4\" data-conekta=\"card[cvc]\"/>\n";
-    $code .="    </label>\n";
-    $code .="  </div>\n";
-    $code .="  <div class=\"row\">\n";
-    $code .="    <label>\n";
-    $code .="      <span>Fecha de expiración (MM/AAAA)</span>\n";
-    $code .="      <input type=\"text\" size=\"2\" data-conekta=\"card[exp_month]\"/>\n";
-    $code .="    </label>\n";
-    $code .="    <span>/</span>\n";
-    $code .="    <input type=\"text\" size=\"4\" data-conekta=\"card[exp_year]\"/>\n";
-    $code .="  </div>\n";
-    $code .="<!-- Información recomendada para sistema antifraude -->\n";
-    $code .="  <div class=\"row\">\n";
-    $code .="    <label>\n";
-    $code .="      <span>Calle</span>\n";
-    $code .="      <input type=\"text\" size=\"25\" data-conekta=\"card[address][street1]\"/>\n";
-    $code .="    </label>\n";
-    $code .="  </div>\n";
-    $code .="<div class=\"row\">\n";
-    $code .="    <label>\n";
-    $code .="      <span>Colonia</span>\n";
-    $code .="      <input type=\"text\" size=\"25\" data-conekta=\"card[address][street2]\"/>\n";
-    $code .="    </label>\n";
-    $code .="  </div>\n";
-    $code .="<div class=\"row\">\n";
-    $code .="    <label>\n";
-    $code .="      <span>Ciudad</span>\n";
-    $code .="      <input type=\"text\" size=\"25\" data-conekta=\"card[address][city]\"/>\n";
-    $code .="    </label>\n";
-    $code .="  </div>\n";
-    $code .="<div class=\"row\">\n";
-    $code .="    <label>\n";
-    $code .="      <span>Estado</span>\n";
-    $code .="      <input type=\"text\" size=\"25\" data-conekta=\"card[address][state]\"/>\n";
-    $code .="    </label>\n";
-    $code .="  </div>\n";
-    $code .="<div class=\"row\">\n";
-    $code .="    <label>\n";
-    $code .="      <span>CP</span>\n";
-    $code .="      <input type=\"text\" size=\"5\" data-conekta=\"card[address][zip]\"/>\n";
-    $code .="    </label>\n";
-    $code .="  </div>\n";
-    $code .="<div class=\"row\">\n";
-    $code .="    <label>\n";
-    $code .="      <span>País</span>\n";
-    $code .="      <input type=\"text\" size=\"25\" data-conekta=\"card[address][country]\"/>\n";
-    $code .="    </label>\n";
-    $code .="  </div>\n";
-    $code .="  <button type=\"submit\">¡Pagar ahora!</button>\n";
-    $code .="</form>\n";
-    $code .="</div></div><div class='modal-footer'></div></div></div></div>";
-    $code .="<button type='button' class='btn btn-success' data-toggle='modal' data-target='#captureCard'>Pay</button>";
-    $code .="<script type=\"text/javascript\" src=\"https://conektaapi.s3.amazonaws.com/v0.5.0/js/conekta.js\"></script>";
+    $code .= "  <span class=\"card-errors\"></span>\n";
+    $code .= "  <div class=\"row\"><div class='form-group'>\n";
+    $code .= "      <label>Nombre del tarjetahabiente</label>\n";
+    $code .= "      <input type=\"text\" size=\"20\" data-conekta=\"card[name]\" value=\"{$firstname} {$lastname}\"/>\n";
+    $code .= "  </div></div>\n";
+    $code .= "  <div class=\"row\">\n";
+    $code .= "    <label>\n";
+    $code .= "      <span>Número de tarjeta de crédito</span>\n";
+    $code .= "      <input type=\"text\" size=\"20\" data-conekta=\"card[number]\"/>\n";
+    $code .= "    </label>\n";
+    $code .= "  </div>\n";
+    $code .= "  <div class=\"row\">\n";
+    $code .= "    <label>\n";
+    $code .= "      <span>CVC</span>\n";
+    $code .= "      <input type=\"text\" size=\"4\" data-conekta=\"card[cvc]\"/>\n";
+    $code .= "    </label>\n";
+    $code .= "  </div>\n";
+    $code .= "  <div class=\"row\">\n";
+    $code .= "    <label>\n";
+    $code .= "      <span>Fecha de expiración (MM/AAAA)</span>\n";
+    $code .= "      <input type=\"text\" size=\"2\" data-conekta=\"card[exp_month]\"/>\n";
+    $code .= "    </label>\n";
+    $code .= "    <span>/</span>\n";
+    $code .= "    <input type=\"text\" size=\"4\" data-conekta=\"card[exp_year]\"/>\n";
+    $code .= "  </div>\n";
+    $code .= "<!-- Información recomendada para sistema antifraude -->\n";
+    $code .= "  <div class=\"row\">\n";
+    $code .= "    <label>\n";
+    $code .= "      <span>Calle</span>\n";
+    $code .= "      <input type=\"text\" size=\"25\" data-conekta=\"card[address][street1]\"/>\n";
+    $code .= "    </label>\n";
+    $code .= "  </div>\n";
+    $code .= "<div class=\"row\">\n";
+    $code .= "    <label>\n";
+    $code .= "      <span>Colonia</span>\n";
+    $code .= "      <input type=\"text\" size=\"25\" data-conekta=\"card[address][street2]\"/>\n";
+    $code .= "    </label>\n";
+    $code .= "  </div>\n";
+    $code .= "<div class=\"row\">\n";
+    $code .= "    <label>\n";
+    $code .= "      <span>Ciudad</span>\n";
+    $code .= "      <input type=\"text\" size=\"25\" data-conekta=\"card[address][city]\"/>\n";
+    $code .= "    </label>\n";
+    $code .= "  </div>\n";
+    $code .= "<div class=\"row\">\n";
+    $code .= "    <label>\n";
+    $code .= "      <span>Estado</span>\n";
+    $code .= "      <input type=\"text\" size=\"25\" data-conekta=\"card[address][state]\"/>\n";
+    $code .= "    </label>\n";
+    $code .= "  </div>\n";
+    $code .= "<div class=\"row\">\n";
+    $code .= "    <label>\n";
+    $code .= "      <span>CP</span>\n";
+    $code .= "      <input type=\"text\" size=\"5\" data-conekta=\"card[address][zip]\"/>\n";
+    $code .= "    </label>\n";
+    $code .= "  </div>\n";
+    $code .= "<div class=\"row\">\n";
+    $code .= "    <label>\n";
+    $code .= "      <span>País</span>\n";
+    $code .= "      <input type=\"text\" size=\"25\" data-conekta=\"card[address][country]\"/>\n";
+    $code .= "    </label>\n";
+    $code .= "  </div>\n";
+    $code .= "  <button type=\"submit\">¡Pagar ahora!</button>\n";
+    $code .= "</form>\n";
+    $code .= "</div></div><div class='modal-footer'></div></div></div></div>";
+    $code .= "<button type='button' class='btn btn-success' data-toggle='modal' data-target='#captureCard'>Pay now</button>";
+    $code .= "<script type=\"text/javascript\" src=\"https://conektaapi.s3.amazonaws.com/v0.5.0/js/conekta.js\"></script>";
 //    $code .="<script type="text/javascript" src='assets/minified.js'></script>\n";
-    $code .="<script type=\"text/javascript\">".
-            "Conekta.setPublishableKey('{$public_key}'); //v3.2 ".
-            "//Conekta.setPublicKey('{$public_key}'); //v5+ ".
-            "</script>";
-    $code .='$(function () {
-    var conektaSuccessResponseHandler = function(token) {
-    console.log("Recibi: ", token);
-     }
-     var conektaErrorResponseHandler = function(err) {
-     console.error("Error: ", err);
-     }
-  $("#card-form").submit(function(event) {
-    event.preventDefault();
-    var $form = $(this);
+    $code .= "<script type=\"text/javascript\">" .
+        "Conekta.setPublicKey('{$public_key}'); //v5+ ";
+    $code .= '
+    $(function () {
+        var conektaSuccessResponseHandler = function(token) {
+            console.log("Recibi: ", token);
+        }
+        var conektaErrorResponseHandler = function(err) {
+            console.error("Error: ", err);
+            $("#card-form").find("button").prop("disabled", false);
+            alert(err.message_to_purchaser);
+        }
+        $("#card-form").submit(function(event) {
+            event.preventDefault();
+            var $form = $(this);
 
-    // Previene hacer submit más de una vez
-    $form.find("button").prop("disabled", true);
-    Conekta.token.create($form, conektaSuccessResponseHandler, conektaErrorResponseHandler);
-   //Conekta.Token.create($form, conektaSuccessResponseHandler, conektaErrorResponseHandler); //v5+
+            // Previene hacer submit más de una vez
+            $form.find("button").prop("disabled", true);
+            Conekta.Token.create($form, conektaSuccessResponseHandler, conektaErrorResponseHandler); //v5+
 
-    // Previene que la información de la forma sea enviada al servidor
-    return false;
-  });
-});';
+            // Previene que la información de la forma sea enviada al servidor
+            return false;
+        });
+    });';
+    $code .= "</script>";
+
     return $code;
 
 }
