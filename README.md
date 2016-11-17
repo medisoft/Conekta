@@ -63,23 +63,22 @@ WHMCS V 5.2 o superior
 
 Instrucciones:
 
-1.- Sube por FTP en la ruta de la instalación de WHMCS la carpeta "modules"
+1.- Sube por FTP en la ruta de la instalación de WHMCS la carpeta "modules" y "assets" a la raiz de WHMCS
+    Copia tambien los archivos PHP que esten en la raiz del proyecto (conekta.php, conekta_oxxo.php, conekta_spei.php) tambien en
+    la raiz de WHMCS.
 
-2.- Configurar la pasarela de pago en el portal de admin del WHMCS
+2.- Copia el archivo clientareacreditcard-conekta.tpl a la raiz de el template que usas en la carpeta templates
 
-3.- Configurar WebHooks en el portal de Conekta.io
+3.- Configura la pasarela de pago en el portal de admin del WHMCS
+
+4.- Configurar WebHooks en el portal de Conekta.io
     
-      - http://www.misitio.com/whmcs/modules/gateways/callback/conektabanorte.php (Eliminado)
-      
-      - http://www.misitio.com/whmcs/modules/gateways/callback/conektaspei.php
-      
-      - http://www.misitio.com/whmcs/modules/gateways/callback/conektaoxxo.php
+      - http://www.misitio.com/whmcs/modules/gateways/callback/conekta.php
 
-3.- Subir a raiz del WHMCS los archvos conekta_oxxo.php y conekta_spei.php
+5.- Realiza un par de pruebas en entorno testing con cada metodo de pago
 
-4.- Realiza un par de pruebas en entorno testing
 
-5.- Disfruta
+Se crea (si hay permisos) una carpeta llamada conekta_logs en la carpeta de callback, para que puedas monitorear los web hooks
 
 
 =======
