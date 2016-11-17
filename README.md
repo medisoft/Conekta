@@ -5,6 +5,7 @@
 - Carga de la ultima libreria de conekta desde composer
 
 Trabajo basado en https://github.com/Carlos110988/Conekta
+Ideas tomadas de https://github.com/nextgenweb/whmcs-stripe
 
 
 Conekta 2.1.3 WHMCS
