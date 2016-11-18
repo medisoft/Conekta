@@ -68,6 +68,11 @@ if ($_SESSION['uid']) {
 //            'score' => 9
         );
 
+
+        // Si se solicita pago recursivo, aqui habria que crear un cliente primero, y reemplazar el token del cargo por el token del cliente
+        // luego habria que guardar en whmcs ese token en gatewayid como dice aca http://docs.whmcs.com/Dev:Gateway:Merchant:Tokenised_Gateways
+        // para habilitar los pagos automaticos
+
         $dataInvoice = localAPI('getinvoice', array('invoiceid' => $smartyvalues["invoiceid"]), 'apiadmin');
 //        echo "<pre>" . print_r($dataInvoice, true) . "</pre>";
 
