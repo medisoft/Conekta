@@ -20,10 +20,12 @@
             </div>
         </div>
     </div>
-    <script type="text/javascript" src="https://conektaapi.s3.amazonaws.com/v0.5.0/js/conekta.js"></script>
+    {*<script type="text/javascript" src="https://conektaapi.s3.amazonaws.com/v0.5.0/js/conekta.js"></script>*}
+    <script type="text/javascript" src="https://conektaapi.s3.amazonaws.com/v1.0.0/js/conekta.js"></script>
     <script type="text/javascript">
 
-        Conekta.setPublicKey('{$conekta_pubkey}');
+        {*Conekta.setPublicKey('{$conekta_pubkey}');*}
+        Conekta.setPublishableKey('{$conekta_pubkey}');
 
         {literal}
         function conektaResponseHandler(token) {
@@ -51,7 +53,8 @@
                 $form.find("button").prop("disabled", true);
                 $('.alert-error').hide();
                 $('.submit-button').prop('disabled', true);
-                Conekta.Token.create($form, conektaResponseHandler, conektaErrorResponseHandler);
+//                Conekta.Token.create($form, conektaResponseHandler, conektaErrorResponseHandler);
+                Conekta.token.create($form, conektaResponseHandler, conektaErrorResponseHandler);
                 return false;
             });
         });
