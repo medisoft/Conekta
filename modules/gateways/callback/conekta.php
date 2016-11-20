@@ -50,6 +50,7 @@ $fee = $json->fee;
 $amount = $json->amount;
 $status = $json->status;
 $transid = $json->id;
+$currency = $json->currency;
 
 logModuleCall('conekta', 'callback', $result, 'ResponseData', 'ProcessedData', array());
 // Validamos que el IPN sea de Banorte
@@ -77,6 +78,25 @@ if ($json->payment_method->type == 'credit' || $json->payment_method->type == 'd
     $decimals_3 = substr($fee, strlen($amount_3), strlen($fee));
     $fee = $amount_3 . '.' . $decimals_3;
 
+    // Inicia conversion de moneda
+    $rs = select_query('tblcurrencies', 'id', array('code' => $currency));
+    $result_data = mysql_fetch_array($rs);
+    $currencyID = $result_data['id'];
+    $rs = select_query('tblinvoices', 'userid', array('id' => $invoiceid));
+    $result_data = mysql_fetch_array($rs);
+    $userid = $result_data['userid'];
+    $currencyTo = getCurrency($userid);
+    if ($currencyID != $currencyTo['id']) {
+        $log = (object)array('currencyFrom' => $currencyID, 'currencyTo' => $currencyTo['id'], 'amount' => $amount, 'fee' => $fee);
+        file_put_contents('conekta_logs/currency.log', "PRECONV: \n" . json_encode($log) . "\n", FILE_APPEND);
+        $amount = convertCurrency($amount, $currencyID, $currencyTo['id']);
+        $fee = convertCurrency($fee, $currencyID, $currencyTo['id']);
+        $log = (object)array('currencyFrom' => $currencyID, 'currencyTo' => $currencyTo['id'], 'amount' => $amount, 'fee' => $fee);
+        file_put_contents('conekta_logs/currency.log', "POSTCONV: \n" . json_encode($log) . "\n", FILE_APPEND);
+        logModuleCall('conekta', 'callback', json_encode($log), 'ResponseData', 'ProcessedData', array());
+    }
+    // termina conversion de moneda
+
     $invoiceid = str_replace('factura_', '', $invoiceid);
 
     if ($status == 'paid') {
@@ -88,6 +108,7 @@ if ($json->payment_method->type == 'credit' || $json->payment_method->type == 'd
     $invoiceid = checkCbInvoiceID($invoiceid, $GATEWAY["name"]); # Checks invoice ID is a valid invoice number or ends processing
 
     checkCbTransID($transid); # Checks transaction number isn't already in the database and ends processing if it does
+
 
     if ($status == "1") {
         # Successful
@@ -172,5 +193,19 @@ if ($json->payment_method->type == 'credit' || $json->payment_method->type == 'd
     $fp = file_put_contents('conekta_logs/unknown_' . md5(uniqid()) . ".txt", $result . "\n", FILE_APPEND);
 }
 
+/*function convierteMoneda($currencyFrom, $currencyTo, $amount) {
+    $result = select_query('tblcurrencies', '', array('code' => $currencyFrom));
+    $data = mysql_fetch_array($result);
+//    $currencyFromID = $data['id'];
+    $currencyFromConvRate = $data['rate'];
+
+    $result = select_query('tblcurrencies', '', array('code' => $currencyTo));
+    $data = mysql_fetch_array($result);
+//    $currencyToID = $data['id'];
+    $currencyToConvRate = $data['rate'];
+
+    $newAmount = $currencyToConvRate * $amount / $currencyFromConvRate;
+    return $newAmount;
+}*/
 header("HTTP/1.0 200");
 ?>
