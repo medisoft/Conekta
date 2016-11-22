@@ -87,10 +87,11 @@ function conektacard_capture($params)
     // Todavia no resuelvo el problema para tokenizar los datos de la tarjeta ... alguien que me ayude???
     // CarlosCesar110988@gmail.om
 
-    require_once('conekta/lib_1.0/Conekta.php');
+//    require_once('conekta/lib_1.0/Conekta.php');
+    require_once('conekta/vendor/conekta/conekta-php/lib/Conekta.php');
 
     # Creamos el Objeto de Cargo
-    Conekta::setApiKey($private_key);
+    \Conekta\Conekta::setApiKey($private_key);
 
     # Arraglo con informacion de tarjeta
     $card = array(
@@ -135,7 +136,7 @@ function conektacard_capture($params)
             )
         );
 
-        $charge = Conekta_Charge::create($conekta);
+        $charge = \Conekta\Charge::create($conekta);
 
         # Transaccion Correcta
         $data = json_decode($charge);

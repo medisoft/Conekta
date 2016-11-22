@@ -73,10 +73,11 @@ function conektaoxxo_link($params)
 
     # Incluimos la libreria de Conecta 2.0
 
-    require_once('conekta/lib_2.0/Conekta.php');
+//    require_once('conekta/lib_2.0/Conekta.php');
+    require_once('conekta/vendor/conekta/conekta-php/lib/Conekta.php');
 
     # Creamos el Objeto de Cargo
-    Conekta::setApiKey($private_key);
+    \Conekta\Conekta::setApiKey($private_key);
 
     # Arraglo con informacion de tarjeta
     $conekta = array(
@@ -107,7 +108,7 @@ function conektaoxxo_link($params)
     );
     try {
 
-        $charge = Conekta_Charge::create($conekta);
+        $charge = \Conekta\Charge::create($conekta);
 
         # Transaccion Correcta
         $data = json_decode($charge);
