@@ -29,6 +29,7 @@ function conekta_link($params)
     $invoiceid = $params['invoiceid'];
     $description = $params["description"];
     $amount = $params['amount']; # Format: ##.##
+    $currency = $params['currency'];
 
     $warning = "false";
 
@@ -37,6 +38,7 @@ function conekta_link($params)
 			<input type="hidden" name="description" value="' . $description . '" />
 			<input type="hidden" name="invoiceid" value="' . $invoiceid . '" />
 			<input type="hidden" name="amount" value="' . $amount . '" />
+			<input type="hidden" name="currency" value="' . $currency . '" />
 			<input type="hidden" name="frominvoice" value="true" />
 			<input type="hidden" name="payfreq" value="otp" />
 			<input type="hidden" name="multiple" value="' . $warning . '" />

@@ -32,6 +32,7 @@ initialiseClientArea($pagetitle, '', $breadcrumbnav);
 $smartyvalues["description"] = $_POST["description"];
 $smartyvalues["invoiceid"] = $_POST["invoiceid"];
 $smartyvalues["amount"] = $_POST["amount"];
+$smartyvalues["currency"] = $_POST["currency"];
 $smartyvalues["total_amount"] = $_POST["total_amount"];
 $smartyvalues["planname"] = $_POST["planname"];
 $smartyvalues["planid"] = $_POST["planid"];
@@ -57,6 +58,7 @@ if ($_SESSION['uid']) {
         $smartyvalues["zipcode"] = $zipcode = $data['postcode'];
         $smartyvalues["country"] = $country = $data['country'];
         $smartyvalues["phone"] = $phone = $data['phonenumber'];
+
 
         $customer = array(
             'corporation_name' => $data['companyname'],
@@ -95,7 +97,7 @@ if ($_SESSION['uid']) {
         // Is this a one time payment or is a subscription being set up?
         if ($_POST['payfreq'] == "otp") {
 
-            $smartyvalues['explanation'] = "You are about to make a one time credit card payment of <strong>$" . $amount . "</strong>.";
+            $smartyvalues['explanation'] = "You are about to make a one time credit card payment of <strong>$" . $amount . " {$smartyvalues["currency"]}</strong>.";
 
             if ($_POST['conektaTokenId'] != "") {
 
@@ -108,7 +110,7 @@ if ($_SESSION['uid']) {
                         'description' => $description,
                         'reference_id' => $smartyvalues["invoiceid"],
                         "amount" => $amount_cents,
-                        "currency" => "MXN",
+                        "currency" => $smartyvalues["currency"],
                         "card" => $token,
                         'details' => array(
                             'name' => $firstname . ' ' . $lastname,

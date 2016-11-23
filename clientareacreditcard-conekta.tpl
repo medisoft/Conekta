@@ -162,6 +162,7 @@
             <input type="hidden" name="description" value="{$description}"/>
             <input type="hidden" name="invoiceid" value="{$invoiceid}"/>
             <input type="hidden" name="amount" value="{$amount}"/>
+            <input type="hidden" name="currency" value="{$currency}"/>
             <input type="hidden" name="total_amount" value="{$total_amount}"/>
             <input type="hidden" name="planid" value="{$planid}"/>
             <input type="hidden" name="planname" value="{$planname}"/>
