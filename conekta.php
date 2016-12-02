@@ -82,14 +82,14 @@ if ($_SESSION['uid']) {
         foreach ($dataInvoice['items'] as $item) {
             $item = $item[0];
 //            echo "<pre>" . print_r($item, true) . "</pre>";
-            $line_items[] = array(
+            $line_items[] = [
                 'name' => $item['type'],
                 'description' => $item['description'],
-                'unit_price' => $item['amount'],
+                'unit_price' => str_replace('.', '', $item['amount']),
                 'quantity' => 1,
                 'sku' => $item['id'],
                 'type' => $item['type']
-            );
+            ];
         }
 
 
@@ -199,9 +199,9 @@ if ($_SESSION['uid']) {
                 $token = $_POST['conektaTokenId'];
                 $multiple = $_POST['multiple'];
 
-                $amount_total_cents = $amount_total * 100;
-                $amount_subscribe_cents = $amount_subscribe * 100;
-                $amount_diff_cents = $amount_diff * 100;
+                $amount_total_cents = bcmul($amount_total,100);
+                $amount_subscribe_cents = bcmul($amount_subscribe,100);
+                $amount_diff_cents = bcmul($amount_diff,100);
 
                 $message = "Amount Total: " . $amount_total . "<br/>";
                 $message .= "Amount Subscribe: " . $amount_subscribe . "<br/>";
